@@ -1,0 +1,136 @@
+:root {
+  --primary-color: #00d2ff;
+  --distracted-color: #ff4b2b;
+  --unknown-color: #fca130;
+  --bg-glass: rgba(15, 15, 15, 0.85);
+  --border-glass: rgba(255, 255, 255, 0.12);
+}
+
+* { box-sizing: border-box; }
+
+body, html {
+  margin: 0; padding: 0; width: 100vw; height: 100vh;
+  background-color: #080b11; font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
+  overflow: hidden;
+}
+
+.app-container { position: relative; width: 100vw; height: 100vh; }
+
+/* BỐ CỤC 3 CỘT X 3 HÀNG CÂN ĐỐI KHÍT MÀN HÌNH */
+.dashboard {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr); 
+  gap: 12px; padding: 12px; height: 100vh; width: 100vw;
+}
+
+.video-cell {
+  position: relative; background-color: #111827; border: 2px solid #1f2937;
+  border-radius: 12px; overflow: hidden; transition: all 0.25s ease;
+  display: flex; justify-content: center; align-items: center;
+}
+.video-player { width: 100%; height: 100%; object-fit: cover; background-color: #000; }
+
+/* Viền phân biệt Camera cá nhân của bạn */
+.teacher-cam { border: 2px solid #a855f7 !important; }
+
+.cell-label {
+  position: absolute; bottom: 10px; left: 10px; background-color: rgba(0, 0, 0, 0.8);
+  color: #f3f4f6; padding: 6px 12px; font-size: 13px; font-weight: 700;
+  border-radius: 6px; z-index: 10; pointer-events: none; border: 1px solid rgba(255,255,255,0.15);
+}
+
+/* HIỆU ỨNG AI NHẬN DIỆN */
+.alert-focus {
+  border-color: #10b981 !important;
+  box-shadow: inset 0 0 15px rgba(16, 185, 129, 0.4);
+}
+
+.alert-distracted {
+  border-color: #ff4b2b !important;
+  animation: pulse-red 1s infinite ease-in-out;
+}
+
+@keyframes pulse-red {
+  0% { box-shadow: inset 0 0 10px rgba(255, 75, 43, 0.3); background-color: rgba(255, 75, 43, 0.05); }
+  50% { box-shadow: inset 0 0 35px rgba(255, 75, 43, 0.7); background-color: rgba(255, 75, 43, 0.15); }
+  100% { box-shadow: inset 0 0 10px rgba(255, 75, 43, 0.3); background-color: rgba(255, 75, 43, 0.05); }
+}
+
+/* BẢNG ĐIỀU KHIỂN NỔI GLASSMORPHISM */
+#ai-dashboard {
+  position: fixed; top: 20px; right: 20px; width: 330px;
+  background: var(--bg-glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  color: white; padding: 18px; border-radius: 16px; z-index: 10001;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6); border: 1px solid var(--border-glass);
+}
+
+.dashboard-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;
+}
+
+.dashboard-title {
+  font-size: 15px; font-weight: 800; letter-spacing: 0.8px;
+  background: linear-gradient(to right, #00d2ff, #00f2fe);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+
+#status-indicator {
+  padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; background: rgba(255, 255, 255, 0.08);
+}
+
+.btn-icon {
+  background: rgba(255,255,255,0.08); border: none; color: white; cursor: pointer;
+  border-radius: 50%; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center;
+}
+.btn-icon:hover { background: rgba(255,255,255,0.2); }
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.04); padding: 12px; border-radius: 10px; margin-bottom: 12px;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.stat-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; font-weight: 500; }
+.progress-container { width: 100%; height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 4px; overflow: hidden; }
+#focus-bar { height: 100%; transition: width 0.4s ease; background: linear-gradient(90deg, #00d2ff, #3a7bd5); box-shadow: 0 0 8px var(--primary-color); }
+
+.btn-group { display: flex; gap: 8px; margin-bottom: 12px; }
+.btn-control {
+  flex: 1; padding: 10px; border: none; border-radius: 8px; cursor: pointer;
+  font-weight: 700; font-size: 12px; transition: all 0.2s ease; text-align: center;
+}
+
+.btn-start { background: linear-gradient(to right, #00d2ff, #3a7bd5); color: #fff; box-shadow: 0 4px 12px rgba(0, 210, 255, 0.3); }
+.btn-stop { background: linear-gradient(to right, #ff416c, #ff4b2b); color: white; box-shadow: 0 4px 12px rgba(255, 75, 43, 0.3); }
+.btn-start:hover, .btn-stop:hover { filter: brightness(1.15); transform: translateY(-1px); }
+
+.log-title { font-size: 11px; color: #9ca3af; margin-bottom: 6px; display: flex; justify-content: space-between; }
+#log-list { max-height: 180px; overflow-y: auto; padding-right: 3px; display: flex; flex-direction: column; gap: 5px; }
+#log-list::-webkit-scrollbar { width: 4px; }
+#log-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+
+.log-entry {
+  background: rgba(255, 255, 255, 0.03); border-left: 3px solid var(--distracted-color); padding: 8px;
+  border-radius: 4px; display: flex; flex-direction: column; background: rgba(255, 75, 43, 0.06);
+}
+.log-time { font-size: 9px; opacity: 0.5; margin-bottom: 1px; }
+.log-name { font-size: 12px; font-weight: 700; color: #fff; }
+.log-reason { font-size: 11px; margin-top: 2px; color: #ff6b6b; font-weight: 500; }
+
+/* MODAL BÁO CÁO CUỐI GIỜ */
+#final-report {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  background: #ffffff; color: #111827; padding: 25px; border-radius: 16px;
+  text-align: center; z-index: 20000; box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+  width: 350px; border: 1px solid rgba(0,0,0,0.1);
+  animation: fadeIn 0.2s ease-out;
+}
+.report-stat-box {
+  display: flex; justify-content: space-around; background: #f3f4f6;
+  padding: 15px 8px; border-radius: 12px; margin: 18px 0; border: 1px solid #e5e7eb;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, -45%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
