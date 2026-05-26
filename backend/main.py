@@ -23,7 +23,7 @@ ASSETS_DIR = os.path.join(BASE_DIR, "../Assets")
 os.makedirs(ASSETS_DIR, exist_ok=True)
 app.mount("/assets", StaticFiles(directory=ASSETS_DIR), name="assets")
 
-model_path = os.path.join(BASE_DIR, "D:/nckhWeb/finalv11.pt")
+model_path = os.path.join(BASE_DIR, "finalv11.pt")
 
 if os.path.exists(model_path):
     model = YOLO(model_path)
