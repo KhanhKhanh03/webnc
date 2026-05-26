@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import './App.css';
 
 const TOTAL_GRIDS = 9; 
-const BACKEND_URL = "http://100.72.34.80:5173"; 
+const BACKEND_URL = "http://100.72.34.80:6868"; 
 
 const VIDEO_LIST = [
   "IMG_1949.MOV", "IMG_1950.MOV", "IMG_1951.MOV", "IMG_1952.MOV", 
@@ -213,7 +213,7 @@ export default function App() {
           const isRealCamera = id === TOTAL_GRIDS; 
           
           const videoSrc = !isRealCamera ? `${BACKEND_URL}/assets/${VIDEO_LIST[index]}` : null;
-          const wsUrl = `ws://100.72.34.80:5173/ws/${id}`;
+          const wsUrl = `ws://100.72.34.80:6868/ws/${id}`;
 
           return (
             <VideoCell 
