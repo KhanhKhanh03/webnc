@@ -2,12 +2,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import './App.css';
 
 const TOTAL_GRIDS = 9; 
-const BACKEND_URL = "http://localhost:6868"; 
+const BACKEND_URL = "https://violin-ranging-sponsor-design.trycloudflare.com"; 
 const MOBILE_MAX_WIDTH = 767;
 
 const VIDEO_LIST = [
-  "IMG_1949.MOV", "IMG_1950.MOV", "IMG_1951.MOV", "IMG_1952.MOV", 
-  "IMG_1991.MOV", "IMG_1994.MOV", "IMG_8540.MOV", "IMG_8541.MOV"
+  "IMG_1949.mp4", "IMG_1950.mp4", "IMG_1951.mp4", "IMG_1952.mp4", 
+  "IMG_1991.mp4", "IMG_1994.mp4", "IMG_8540.mp4", "IMG_8541.mp4"
 ];
 
 function VideoCell({ id, isRealCamera, videoSrc, wsUrl, isDetectionActive, globalPlay, onStatusChange, onViolation }) {
