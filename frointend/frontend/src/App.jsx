@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import './App.css';
 
 const TOTAL_GRIDS = 9; 
-const BACKEND_URL = "http://100.72.34.80:6868"; 
+const BACKEND_URL = "http://localhost:6868"; 
 const MOBILE_MAX_WIDTH = 767;
 
 const VIDEO_LIST = [
