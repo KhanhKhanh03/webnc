@@ -1,13 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './App.css';
 
-const TOTAL_GRIDS = 9; 
-const BACKEND_URL = "https://violin-ranging-sponsor-design.trycloudflare.com"; 
-const MOBILE_MAX_WIDTH = 767;
+const TOTAL_GRIDS = 4; 
+const BACKEND_URL = "http://violin-ranging-sponsor-design.trycloudflare.com"; 
 
 const VIDEO_LIST = [
-  "IMG_1949.mp4", "IMG_1950.mp4", "IMG_1951.mp4", "IMG_1952.mp4", 
-  "IMG_1991.mp4", "IMG_1994.mp4", "IMG_8540.mp4", "IMG_8541.mp4"
+  "IMG_1949.mp4", "IMG_1991.mp4", "IMG_1994.mp4",
 ];
 
 function VideoCell({ id, isRealCamera, videoSrc, wsUrl, isDetectionActive, globalPlay, onStatusChange, onViolation }) {
@@ -143,11 +141,9 @@ export default function App() {
   const [globalPlay, setGlobalPlay] = useState(false);
   const [studentStatuses, setStudentStatuses] = useState({});
   const [isMinimized, setIsMinimized] = useState(false);
-  const [isMobilePanelOpen, setIsMobilePanelOpen] = useState(false);
   const [logs, setLogs] = useState([]);
   const [sessionStats, setSessionStats] = useState({ scans: 0, focusSum: 0, distSum: 0 });
   const [showReport, setShowReport] = useState(false);
-  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= MOBILE_MAX_WIDTH);
 
   const handleStatusChange = (id, status) => {
     setStudentStatuses(prev => {
@@ -173,10 +169,10 @@ export default function App() {
 
   const startMonitoring = () => {
     setIsDetectionActive(true);
+    setGlobalPlay(true);
     setLogs([]);
     setSessionStats({ scans: 0, focusSum: 0, distSum: 0 });
     setShowReport(false);
-    if (isMobile) setIsMobilePanelOpen(true);
   };
 
   const stopMonitoring = () => {
@@ -209,145 +205,110 @@ export default function App() {
   const avgFocus = sessionStats.scans > 0 ? Math.round(sessionStats.focusSum / sessionStats.scans) : 0;
   const avgDist = sessionStats.scans > 0 ? Math.round(sessionStats.distSum / sessionStats.scans) : 0;
 
-  useEffect(() => {
-    const mediaQuery = window.matchMedia(`(max-width: ${MOBILE_MAX_WIDTH}px)`);
-    const updateViewport = (event) => {
-      setIsMobile(event.matches);
-    };
-
-    setIsMobile(mediaQuery.matches);
-    mediaQuery.addEventListener('change', updateViewport);
-
-    return () => mediaQuery.removeEventListener('change', updateViewport);
-  }, []);
-
-  useEffect(() => {
-    if (!isMobile) {
-      setIsMobilePanelOpen(false);
-    }
-  }, [isMobile]);
-
-  const togglePanel = () => {
-    if (isMobile) {
-      setIsMobilePanelOpen((prev) => !prev);
-      return;
-    }
-    setIsMinimized((prev) => !prev);
-  };
-
-  const isPanelExpanded = isMobile ? isMobilePanelOpen : !isMinimized;
-
   return (
     <div className="app-container">
-      <div className="app-shell">
-        <div className="dashboard">
-          {Array.from({ length: TOTAL_GRIDS }).map((_, index) => {
-            const id = index + 1;
-            const isRealCamera = id === TOTAL_GRIDS; 
-            
-            const videoSrc = !isRealCamera ? `${BACKEND_URL}/assets/${VIDEO_LIST[index]}` : null;
-            const wsUrl = `ws://100.72.34.80:6868/ws/${id}`;
-
-            return (
-              <VideoCell 
-                key={id} id={id} isRealCamera={isRealCamera} videoSrc={videoSrc} wsUrl={wsUrl}
-                isDetectionActive={isDetectionActive} globalPlay={globalPlay}
-                onStatusChange={handleStatusChange} onViolation={handleViolation}
-              />
-            );
-          })}
-        </div>
-
-        <div id="ai-dashboard" className={`${isPanelExpanded ? 'is-open' : ''} ${isMinimized ? 'is-minimized' : ''}`}>
-          <div className="dashboard-header">
-              <span className="dashboard-title">FOCUS TRACKER PRO</span>
-              <div className="dashboard-status-wrap">
-                  <span id="status-indicator" style={{ color: isDetectionActive ? '#00d2ff' : '#fff' }}>
-                    {isDetectionActive ? 'ĐANG QUÉT...' : 'OFFLINE'}
-                  </span>
-                  <button className="btn-icon" title={isMobile ? "Mở/Tắt bảng điều khiển" : "Thu gọn"} onClick={togglePanel}>
-                    {isMobile ? (isMobilePanelOpen ? '✕' : '☰') : (isMinimized ? '➕' : '➖')}
-                  </button>
-              </div>
-          </div>
+      <div className="dashboard">
+        {Array.from({ length: TOTAL_GRIDS }).map((_, index) => {
+          const id = index + 1;
+          const isRealCamera = id === TOTAL_GRIDS; 
           
-          {isPanelExpanded && (
-            <div id="dashboard-body">
-              <div className="btn-group">
-                  <button 
-                    className={`btn-control ${globalPlay ? 'btn-neutral-active' : 'btn-neutral'}`}
-                    onClick={() => setGlobalPlay(!globalPlay)}
-                  >
-                    {globalPlay ? '⏸ DỪNG PHÁT VIDEO' : '▶️ PHÁT ĐỒNG LOẠT'}
-                  </button>
-              </div>
+          const videoSrc = !isRealCamera ? `${BACKEND_URL}/assets/${VIDEO_LIST[index]}` : null;
+          const wsUrl = `ws://100.72.34.80:6868/ws/${id}`;
 
-              <div className="stat-card">
-                  <div className="stat-row">
-                      <span>Lớp học Focus:</span>
-                      <strong style={{ color: 'var(--primary-color)' }}>{focusedPercent}%</strong>
-                  </div>
-                  <div className="progress-container">
-                      <div id="focus-bar" style={{ width: `${focusedPercent}%` }}></div>
-                  </div>
-              </div>
-
-              <div className="btn-group">
-                  {!isDetectionActive ? (
-                    <button className="btn-control btn-start" onClick={startMonitoring}>BẮT ĐẦU QUÉT AI</button>
-                  ) : (
-                    <button className="btn-control btn-stop" onClick={stopMonitoring}>DỪNG QUÉT AI</button>
-                  )}
-              </div>
-              
-              <div className="log-title">
-                  <span>🔴 DANH SÁCH VI PHẠM:</span>
-                  <span style={{ color: '#00d2ff', fontWeight: 'bold' }}>{logs.length}</span>
-              </div>
-              
-              <div id="log-list">
-                  {logs.length === 0 ? (
-                    <div className="empty-log-note">
-                      {isDetectionActive ? 'Hệ thống đang quét...' : 'Chưa kích hoạt hoặc không có vi phạm'}
-                    </div>
-                  ) : (
-                    logs.map((log) => (
-                      <div key={log.id} className={`log-entry ${log.typeClass}`}>
-                          <div className="log-time">[{log.time}]</div>
-                          <div className="log-name">{log.name}</div>
-                          <div className="log-reason">🔴 {log.reason}</div>
-                      </div>
-                    ))
-                  )}
-              </div>
-            </div>
-          )}
-        </div>
+          return (
+            <VideoCell 
+              key={id} id={id} isRealCamera={isRealCamera} videoSrc={videoSrc} wsUrl={wsUrl}
+              isDetectionActive={isDetectionActive} globalPlay={globalPlay}
+              onStatusChange={handleStatusChange} onViolation={handleViolation}
+            />
+          );
+        })}
       </div>
 
-      {isMobile && !isMobilePanelOpen && (
-        <button className="mobile-panel-trigger" onClick={() => setIsMobilePanelOpen(true)}>
-          MỞ BẢNG ĐIỀU KHIỂN
-        </button>
-      )}
+      <div id="ai-dashboard">
+        <div className="dashboard-header">
+            <span className="dashboard-title">FOCUS TRACKER PRO</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span id="status-indicator" style={{ color: isDetectionActive ? '#00d2ff' : '#fff' }}>
+                  {isDetectionActive ? 'ĐANG QUÉT...' : 'OFFLINE'}
+                </span>
+                <button className="btn-icon" title="Thu gọn" onClick={() => setIsMinimized(!isMinimized)}>
+                  {isMinimized ? '➕' : '➖'}
+                </button>
+            </div>
+        </div>
+        
+        {!isMinimized && (
+          <div id="dashboard-body">
+            <div className="btn-group" style={{ marginBottom: '10px' }}>
+                <button 
+                  className="btn-control" 
+                  style={{ background: globalPlay ? '#fca130' : '#4b5563', color: '#fff' }}
+                  onClick={() => setGlobalPlay(!globalPlay)}
+                >
+                  {globalPlay ? '⏸ DỪNG PHÁT VIDEO' : '▶️ PHÁT ĐỒNG LOẠT'}
+                </button>
+            </div>
+
+            <div className="stat-card">
+                <div className="stat-row">
+                    <span>Lớp học Focus:</span>
+                    <strong style={{ color: 'var(--primary-color)' }}>{focusedPercent}%</strong>
+                </div>
+                <div className="progress-container">
+                    <div id="focus-bar" style={{ width: `${focusedPercent}%` }}></div>
+                </div>
+            </div>
+
+            <div className="btn-group">
+                {!isDetectionActive ? (
+                  <button className="btn-control btn-start" onClick={startMonitoring}>BẮT ĐẦU QUÉT AI</button>
+                ) : (
+                  <button className="btn-control btn-stop" onClick={stopMonitoring}>DỪNG QUÉT AI</button>
+                )}
+            </div>
+            
+            <div className="log-title">
+                <span>🔴 DANH SÁCH VI PHẠM:</span>
+                <span style={{ color: '#00d2ff', fontWeight: 'bold' }}>{logs.length}</span>
+            </div>
+            
+            <div id="log-list">
+                {logs.length === 0 ? (
+                  <div style={{ textAlign: 'center', color: '#aaa', fontSize: '12px', marginTop: '20px' }}>
+                    {isDetectionActive ? 'Hệ thống đang quét...' : 'Chưa kích hoạt hoặc không có vi phạm'}
+                  </div>
+                ) : (
+                  logs.map((log) => (
+                    <div key={log.id} className={`log-entry ${log.typeClass}`}>
+                        <div className="log-time">[{log.time}]</div>
+                        <div className="log-name">{log.name}</div>
+                        <div className="log-reason">🔴 {log.reason}</div>
+                    </div>
+                  ))
+                )}
+            </div>
+          </div>
+        )}
+      </div>
 
       {showReport && (
         <div id="final-report" style={{ display: 'block' }}>
-            <h2 className="report-title">TỔNG KẾT TIẾT HỌC</h2>
-            <p className="report-subtitle">Chỉ số tập trung tích lũy</p>
+            <h2 style={{ marginTop: 0, color: '#111', fontSize: '20px', fontWeight: '800' }}>TỔNG KẾT TIẾT HỌC</h2>
+            <p style={{ color: '#666', fontSize: '13px', marginBottom: 0 }}>Chỉ số tập trung tích lũy</p>
             
             <div className="report-stat-box">
                 <div>
-                    <div className="report-stat-label">🟢 TẬP TRUNG</div>
-                    <div className="report-stat-value report-stat-value-focus">{avgFocus}%</div>
+                    <div style={{ fontSize: '12px', color: '#666', fontWeight: 'bold' }}>🟢 TẬP TRUNG</div>
+                    <div style={{ fontSize: '36px', fontWeight: 900, color: '#00d2ff', marginTop: '5px' }}>{avgFocus}%</div>
                 </div>
                 <div>
-                    <div className="report-stat-label">🔴 XAO NHÃNG</div>
-                    <div className="report-stat-value report-stat-value-dist">{avgDist}%</div>
+                    <div style={{ fontSize: '12px', color: '#666', fontWeight: 'bold' }}>🔴 XAO NHÃNG</div>
+                    <div style={{ fontSize: '36px', fontWeight: 900, color: '#ff4b2b', marginTop: '5px' }}>{avgDist}%</div>
                 </div>
             </div>
             
-            <button className="btn-control report-close-btn" onClick={() => setShowReport(false)}>
+            <button className="btn-control" style={{ background: '#e5e7eb', color: '#1f2937', width: '100%', borderRadius: '8px', fontWeight: '700' }} onClick={() => setShowReport(false)}>
               XÁC NHẬN ĐÓNG
             </button>
         </div>
