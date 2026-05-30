@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import './App.css';
 
 const TOTAL_GRIDS = 4; 
-const BACKEND_URL = "http://violin-ranging-sponsor-design.trycloudflare.com"; 
+const BACKEND_URL = "https://trading-apparent-hundreds-jacket.trycloudflare.com/"; 
 
 const VIDEO_LIST = [
   "IMG_1949.mp4", "IMG_1991.mp4", "IMG_1994.mp4",
